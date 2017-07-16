@@ -1,14 +1,12 @@
-import java.awt.Dimension;
+//import java.awt.Dimension;
 import edu.uci.ics.jung.algorithms.cluster.*;
 import java.io.*;
-import java.util.Random;
 import edu.uci.ics.jung.graph.*;
-import edu.uci.ics.jung.visualization.BasicVisualizationServer;
-import edu.uci.ics.jung.algorithms.layout.*;
-import javax.swing.*;
+//import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+//import edu.uci.ics.jung.algorithms.layout.*;
+//import javax.swing.*;
 import java.util.Set;
 import java.util.Iterator;
-import edu.uci.ics.jung.graph.util.Pair;
 
 
 class Link{
@@ -25,7 +23,7 @@ class Link{
 
 public class Main {
 	
-	public static void Visualize(Graph<Integer,Link> graph) {
+	/*public static void Visualize(Graph<Integer,Link> graph) {
 		FRLayout2<Integer, Integer> layout = new FRLayout2(graph);
 		layout.setSize(new Dimension(700,700)); // sets the initial size of the space
 		BasicVisualizationServer<Integer,Integer> vv =
@@ -37,7 +35,7 @@ public class Main {
 		frame.getContentPane().add(vv);
 		frame.pack();
 		frame.setVisible(true); 
-	}
+	}*/
 	
 	
 	public static void ReadTextFile(String fileName, Graph<Integer, Link> graph) {
