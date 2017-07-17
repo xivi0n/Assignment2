@@ -1,7 +1,7 @@
 //import java.awt.Dimension;
 import edu.uci.ics.jung.algorithms.scoring.ClosenessCentrality;
 import edu.uci.ics.jung.algorithms.scoring.EigenvectorCentrality;
-import edu.uci.ics.jung.algorithms.importance.BetweennessCentrality;
+import edu.uci.ics.jung.algorithms.scoring.BetweennessCentrality;
 import java.util.Arrays;
 import edu.uci.ics.jung.algorithms.cluster.*;
 import java.util.Collection;
@@ -84,6 +84,7 @@ public class Main {
 			}
 		}
 	}
+	
 	//Making Giant Connected Component 
 	public static void MakeGCC(Graph<Integer, Link> graph) {
 		WeakComponentClusterer<Integer, Link> wcc = new WeakComponentClusterer<Integer, Link>();
@@ -109,6 +110,7 @@ public class Main {
 			}
 		}
 	}
+	
 	//Pearson's Correlation Coefficient 
 	public static double PearsonCorrelationCoefficient(double[] X,double[] Y) {
 		double sumX=0;
@@ -161,6 +163,7 @@ public class Main {
 		 }
 	return PearsonCorrelationCoefficient(X,Y);
 	}
+	
 	//Spearman's Correlation Coefficient
 	public static double[] sort(double[] arr) {
 		double pom=arr[0];
@@ -247,23 +250,26 @@ public class Main {
 		Y1=rang(Y);
 		return PearsonCorrelationCoefficient(X1,Y1);
 	}
+	
 	/////////////////////////////GCC Dissolving///////////////////////////////////////////
 	//Degree Dissolving
 	public static void dissolveDegree(Graph<Integer, Link> graph) {
+		
 		ValueDegree[] X=new ValueDegree[graph.getVertexCount()];
 		int k=0;
 		Iterator<Integer> iter = graph.getVertices().iterator();
 		while (iter.hasNext()) {
 			Integer n = iter.next();
-			X[k].Degree=graph.degree(n);
-			X[k].Element=n;
+			X[k]=new ValueDegree(graph.degree(n),n);
+			//X[k].Degree=graph.degree(n);
+			//X[k].Element=n;
 			k++;
 		}
 		
 		ValueDegree pom=X[0];
 		for (int i=0; i<X.length-1;i++) { 
             for (int j=i+1;j<X.length;j++) {
-              if (X[i].Degree>=X[j].Degree) {
+              if (X[i].Degree<=X[j].Degree) {
                                 pom=X[i]; 
                                 X[i]=X[j]; 
                                 X[j]=pom; 
@@ -271,7 +277,7 @@ public class Main {
             }
 		}
 		
-		for (int j=0;j>X.length;j++) {
+		for (int j=0;j<X.length;j++) {
             if (X[X.length-1].Degree>X[j].Degree) {
                               pom=X[X.length-1]; 
                               X[X.length-1]=X[j]; 
@@ -283,6 +289,7 @@ public class Main {
 			graph.removeVertex(X[j].Element);
 		}
 	}
+	
 	//BetweennessCentrality Dissolving
 	public static void dissolveBetweennessCentrality(Graph<Integer, Link> graph) {
 		
@@ -292,15 +299,16 @@ public class Main {
 		Iterator<Integer> it=graph.getVertices().iterator();
 		while (it.hasNext()) {
 			Integer n=it.next();
-			X[k].Element=n;
-			X[k].Degree=bc.getVertexRankScore(n);
+			X[k]=new ValueDegree(bc.getVertexScore(n),n);
+			//X[k].Degree=graph.degree(n);
+			//X[k].Element=n;
 			k++;
 		}
 		
 		ValueDegree pom=X[0];
 		for (int i=0; i<X.length-1;i++) { 
             for (int j=i+1;j<X.length;j++) {
-              if (X[i].Degree>=X[j].Degree) {
+              if (X[i].Degree<=X[j].Degree) {
                                 pom=X[i]; 
                                 X[i]=X[j]; 
                                 X[j]=pom; 
@@ -308,7 +316,7 @@ public class Main {
             }
 		}
 		
-		for (int j=0;j>X.length;j++) {
+		for (int j=0;j<X.length;j++) {
             if (X[X.length-1].Degree>X[j].Degree) {
                               pom=X[X.length-1]; 
                               X[X.length-1]=X[j]; 
@@ -321,6 +329,7 @@ public class Main {
 		}
 		
 	}
+	
 	//ClosenessCentrality Dissolving
 	public static void dissolveClosenessCentrality(Graph<Integer,Link> graph) {
 		ValueDegree[] X=new ValueDegree[graph.getVertexCount()];
@@ -329,15 +338,18 @@ public class Main {
 		Iterator<Integer> it=graph.getVertices().iterator();
 		while (it.hasNext()) {
 			Integer n=it.next();
-			X[k].Element=n;
-			X[k].Degree=cc.getVertexScore(n);
+			//System.out.println(n);
+			double num=cc.getVertexScore(n);
+			//System.out.println(num);
+			X[k]=new ValueDegree(num,n);
 			k++;
+			
 		}
-		
+		//System.out.println(k);
 		ValueDegree pom=X[0];
 		for (int i=0; i<X.length-1;i++) { 
             for (int j=i+1;j<X.length;j++) {
-              if (X[i].Degree>=X[j].Degree) {
+              if (X[i].Degree<=X[j].Degree) {
                                 pom=X[i]; 
                                 X[i]=X[j]; 
                                 X[j]=pom; 
@@ -345,36 +357,39 @@ public class Main {
             }
 		}
 		
-		for (int j=0;j>X.length;j++) {
+		for (int j=0;j<X.length;j++) {
             if (X[X.length-1].Degree>X[j].Degree) {
                               pom=X[X.length-1]; 
                               X[X.length-1]=X[j]; 
                               X[j]=pom; 
             }
 		}
-		
+		//System.out.println(2);
 		for(int j=0; j<graph.getVertexCount();j++) {
 			graph.removeVertex(X[j].Element);
-		}
-		
+		}	
 	}
+	
 	//EigenvectorCentrality Dissolving
 	public static void dissolveEigenvectorCentrality(Graph<Integer,Link> graph) {
 		ValueDegree[] X=new ValueDegree[graph.getVertexCount()];
 		int k=0;
+		double num=0;
 		EigenvectorCentrality<Integer,Link> ec = new EigenvectorCentrality<Integer, Link>(graph);
 		Iterator<Integer> it=graph.getVertices().iterator();
 		while (it.hasNext()) {
 			Integer n=it.next();
-			X[k].Element=n;
-			X[k].Degree=ec.getVertexScore(n);
+			num=ec.getVertexScore(n);
+			X[k]=new ValueDegree(num,n);
+			//X[k].Element=n;
+			//X[k].Degree=ec.getVertexScore(n);
 			k++;
 		}
 		
 		ValueDegree pom=X[0];
 		for (int i=0; i<X.length-1;i++) { 
             for (int j=i+1;j<X.length;j++) {
-              if (X[i].Degree>=X[j].Degree) {
+              if (X[i].Degree<=X[j].Degree) {
                                 pom=X[i]; 
                                 X[i]=X[j]; 
                                 X[j]=pom; 
@@ -382,7 +397,7 @@ public class Main {
             }
 		}
 		
-		for (int j=0;j>X.length;j++) {
+		for (int j=0;j<X.length;j++) {
             if (X[X.length-1].Degree>X[j].Degree) {
                               pom=X[X.length-1]; 
                               X[X.length-1]=X[j]; 
@@ -395,7 +410,9 @@ public class Main {
 		}
 		
 	}
-	public static Graph<Integer, Link> copy(Graph<Integer,Link> graph) {
+	
+	//Copying Graph
+	public static Graph<Integer,Link> copy(Graph<Integer,Link> graph) {
 		Graph<Integer, Link> graphCopy = new UndirectedSparseGraph<Integer,Link>();
 		for (Integer n: graph.getVertices()) {
 			graphCopy.addVertex(n);
@@ -405,19 +422,73 @@ public class Main {
 		}
 	return graphCopy;
 	}
-	public static void main(String args[]) {
+	
+	//Deleting 90% of graph
+	public static void delete90(Graph<Integer,Link> graph) {
+		ValueDegree[] X=new ValueDegree[graph.getVertexCount()];
+		int k=0;
+		double num=0;
+		ClosenessCentrality<Integer,Link> cc = new ClosenessCentrality<Integer, Link>(graph);
+		Iterator<Integer> it=graph.getVertices().iterator();
+		while (it.hasNext()) {
+			Integer n=it.next();
+			num=cc.getVertexScore(n);
+			X[k]=new ValueDegree(num,n);
+			//System.out.println(n);
+			k++;
+		}
+		System.out.println(k);
+		ValueDegree pom=X[0];
+		for (int i=0; i<X.length-1;i++) { 
+            for (int j=i+1;j<X.length;j++) {
+              if (X[i].Degree>=X[j].Degree) {
+                                pom=X[i]; 
+                                X[i]=X[j]; 
+                                X[j]=pom; 
+              }
+            }
+		}
 		
+		for (int j=0;j<X.length;j++) {
+            if (X[X.length-1].Degree<X[j].Degree) {
+                              pom=X[X.length-1]; 
+                              X[X.length-1]=X[j]; 
+                              X[j]=pom; 
+            }
+		}
+		
+		for(int j=0; j<graph.getVertexCount()*0.9;j++) {
+			graph.removeVertex(X[j].Element);
+		}
+	}
+	
+	public static void main(String args[]) {
+	
+	
 		Graph<Integer, Link> graph = new UndirectedSparseGraph<Integer, Link>();
 		ReadTextFile("CA-GrQc.txt", graph);
 		//Visualize(graph);
 		MakeGCC(graph);
 		Graph<Integer, Link> graphCopy = new UndirectedSparseGraph<Integer,Link>();
 		graphCopy=copy(graph);
-		
+		System.out.println(graph.getVertexCount());
 		System.out.println(Pearson(graph));
 		System.out.println(Spearman(graph));
-		//double[] k=new double[]{65, 32, 28,32,54,97,71};
+		/*double[] k=new double[]{65, 32, 28,32,54,97,71};
 		//k=rang(k);
+		k=sort(k);
+		for (int i=0;i<k.length;i++) {
+			System.out.println(k[i]);
+		}*/
+		//dissolveEigenvectorCentrality(graph);
+		//MakeGCC(graph);
+		//System.out.println(graph.getVertexCount());
+		dissolveClosenessCentrality(graph);
+		//dissolveBetweennessCentrality(graph);
+		//dissolveEigenvectorCentrality(graph);
+		//dissolveDegree(graph);
+		MakeGCC(graph);
+		System.out.println(graph.getVertexCount());
 
 	}
 }
