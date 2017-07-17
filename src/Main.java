@@ -23,6 +23,7 @@ class Link{
 
 public class Main {
 	
+	//Visualization
 	/*public static void Visualize(Graph<Integer,Link> graph) {
 		FRLayout2<Integer, Integer> layout = new FRLayout2(graph);
 		layout.setSize(new Dimension(700,700)); // sets the initial size of the space
@@ -36,8 +37,7 @@ public class Main {
 		frame.pack();
 		frame.setVisible(true); 
 	}*/
-	
-	
+	//Making Graph from TextFile
 	public static void ReadTextFile(String fileName, Graph<Integer, Link> graph) {
 		String line = null;
 		BufferedReader buffRead = null;
@@ -67,7 +67,7 @@ public class Main {
 			}
 		}
 	}
-	
+	//Making Giant Connected Component 
 	public static void MakeGCC(Graph<Integer, Link> graph) {
 		WeakComponentClusterer<Integer, Link> wcc = new WeakComponentClusterer<Integer, Link>();
 		Set<Set<Integer>> comps=wcc.transform(graph);
@@ -92,10 +92,11 @@ public class Main {
 			}
 		}
 	}
-	
-	public static double PearsonCorrelationCoefficient(int[] X, int[] Y, int cnt) {
-		int sumX=0;
-		int sumY=0;
+	//Pearson's Correlation Coefficient 
+	public static double PearsonCorrelationCoefficient(double[] X,double[] Y) {
+		double sumX=0;
+		double sumY=0;
+		int cnt=X.length;
 		double[] X1=new double[cnt];
 		double[] Y1=new double[cnt];
 		for (int i=0; i<cnt;i++) {
@@ -123,9 +124,10 @@ public class Main {
 	return coeff;
 	}
 	public static double Pearson(Graph<Integer, Link> graph) {
+
 		
-		int[] X = new int[graph.getEdgeCount()*2];
-		int[] Y = new int[graph.getEdgeCount()*2];
+		double[] X = new double[graph.getEdgeCount()*2];
+		double[] Y = new double[graph.getEdgeCount()*2];
 		
 		int cnt=0;
 		 for (Link link: graph.getEdges()) {
@@ -140,19 +142,96 @@ public class Main {
 	            Y[cnt]=graph.degree(n1);
 	            ++cnt;
 		 }
-	return PearsonCorrelationCoefficient(X,Y,cnt);
+	return PearsonCorrelationCoefficient(X,Y);
 	}
-	
-	
+	//Spearman's Correlation Coefficient
+	public static int[] sort(int[] arr) {
+		int pom=arr[0];
+		for (int i=0; i<arr.length-1;i++) { 
+            for (int j=i+1;j<arr.length;j++) {
+              if (arr[i]>=arr[j]) {
+                                pom=arr[i]; 
+                                arr[i]=arr[j]; 
+                                arr[j]=pom; 
+              }
+            }
+		}
+		for (int j=0;j<arr.length;j++) {
+            if (arr[arr.length-1]>=arr[j]) {
+                              pom=arr[arr.length-1]; 
+                              arr[arr.length-1]=arr[j]; 
+                              arr[j]=pom; 
+            }
+		}
+	return arr;
+	}
+	public static double[] rang(double[] arr) {
+		int br=0;
+		int num=0;
+		int sum=0;
+		int j=0;
+		double[] result=new double[arr.length];
+		for(int i=0;i<arr.length-1;i++) {
+			br+=1;
+			if (arr[i]!=arr[i+1]) {
+				result[i]=br;
+			} else {
+				num=br;
+				sum=br;
+				j=i;
+				while (arr[j]==arr[j+1]) {
+					num+=1;
+					sum+=num;
+					j+=1;
+				}
+				
+				for(int k=i;k<num;k++) {
+					double sum1=sum;
+					double num1=num-1;
+					result[k]=sum1/num1;
+				}
+				i=num-1;
+				br=num;
+			}
+		
+		}
+		result[arr.length-1]=br+1;
+	return result;
+	}
+	public static double Spearman(Graph<Integer, Link> graph) {
+		double[] X = new double[graph.getEdgeCount()*2];
+		double[] Y = new double[graph.getEdgeCount()*2];
+		
+		int cnt=0;
+		 for (Link link: graph.getEdges()) {
+	            int n1=link.Node1;
+	            int n2=link.Node2;
+	            
+	            X[cnt]=graph.degree(n1);
+	            Y[cnt]=graph.degree(n2);
+	            ++cnt;
+	            
+	            X[cnt]=graph.degree(n2);
+	            Y[cnt]=graph.degree(n1);
+	            ++cnt;
+		 }
+		 
+		double[] X1=new double[X.length];
+		X1=rang(X);
+		double[] Y1=new double[Y.length];
+		Y1=rang(Y);
+		return PearsonCorrelationCoefficient(X1,Y1);
+	}
 	
 	public static void main(String args[]) {
 		
 		Graph<Integer, Link> graph = new UndirectedSparseGraph<Integer, Link>();
 		ReadTextFile("CA-GrQc.txt", graph);
 		//Visualize(graph);
-		
 		MakeGCC(graph);
 		System.out.println(Pearson(graph));
+		System.out.println(Spearman(graph));
+		
 		
 
 	}
